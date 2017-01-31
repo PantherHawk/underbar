@@ -367,11 +367,20 @@ _.some = function(collection, iterator) {
   // input array. For a tip on how to make a copy of an array, see:
   // http://mdn.io/Array.prototype.slice
   _.shuffle = function(array) {
-    var clone = array.slice(0);
+       var copyArr = array.slice(0);
 
-    while (array.length !== 0) {
-      i = 
-    }
+     return _.reduce(copyArr, function(startVal, item, key, collection){
+
+      var newInd = Math.floor((Math.random(0, array.length - 1)) * (array.length - 1));
+
+      var oldVal = copyArr[newInd];
+
+      copyArr[key] = oldVal;
+
+      copyArr[newInd] = item;
+
+      return startVal;
+     }, copyArr)
   };
 
 
@@ -444,25 +453,90 @@ _.some = function(collection, iterator) {
   //i-p a number of arrays.
   //o-p one array made of arrays of the other arrays' elements at the same respective indexes.
   // 
+
+
   _.zip = function() {
+    var resultant=[];
+    var args=Array.prototype.slice.call(arguments);
+    var max=0;
+    args.forEach(function(arr) {
+      arr.length > max ? max=arr.length : null;
+    });
+    args.forEach(function(arr) {
+      for (var i=0; i<max; i++) {
+        if (resultant[i]===undefined) {
+          resultant.push([]);
+        }
+        resultant[i].push(arr[i]);
+      }
+    });
+
+    return resultant;
   };
 
   // Takes a multidimensional array and converts it to a one-dimensional array.
   // The new array should contain all elements of the multidimensional array.
   //
   // Hint: Use Array.isArray to check if something is an array
-  _.flatten = function(nestedArray, result) {
+ _.flatten = function(nestedArray, result) {
+    var result=[];
+
+    var extractArray = function(arrays, result) {
+      _.each(arrays, function(arr) {
+        if (Array.isArray(arr)) {
+          extractArray(arr, result);
+        } else {
+          result.push(arr);
+        }
+      });
+    };
+    extractArray(nestedArray, result);
+    return result;
   };
 
   // Takes an arbitrary number of arrays and produces an array that contains
   // every item shared between all the passed-in arrays.
   _.intersection = function() {
+    var arrays=Array.prototype.slice.call(arguments);
+    var results=arrays[0].slice();
+    var resultsTemp=[];
+    _.each(arrays, function(arr) {
+      resultsTemp=[];
+      _.each(arr, function(val) {
+        results.indexOf(val) >-1 ? resultsTemp.push(val) : null;
+      });
+      results=resultsTemp.slice();
+    });
+
+    return results;
+
   };
 
   // Take the difference between one array and a number of other arrays.
   // Only the elements present in just the first array will remain.
-  _.difference = function(array) {
+each(collection, func) {
+  for(var i = 0; i<collection.length; i++) {
+    return func(collection[i])
+  }
+}
+
+ _.difference = function(array) {
+    var args=Array.prototype.slice.call(arguments, 1);
+    var testArray=array.slice();
+    var tempArray=[];
+
+    _.each(args, function(arr) {
+      tempArray=[];
+      _.each(testArray, function(val, key) {
+        arr.indexOf(val)===-1 ? tempArray.push(val) : null;
+      });
+      testArray=tempArray.slice();
+    });
+
+    return testArray;
+
   };
+
 
   // Returns a function, that, when invoked, will only be triggered at most once
   // during a given window of time.  See the Underbar readme for extra details
